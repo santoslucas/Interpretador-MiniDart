@@ -274,6 +274,7 @@ public class SyntaticAnalysis {
 
     // <assert> ::= assert '(' <expr> [ ',' <expr> ] ')' ';'
     private void procAssert() {
+        // TODO: me completar!
     }
 
     // <if> ::= if '(' <expr> ')' <body> [ else <body> ]
@@ -462,10 +463,34 @@ public class SyntaticAnalysis {
 
     // <term> ::= <prefix> { ( '*' | '/' | '%' ) <prefix> }
     private Expr procTerm() {
-        Expr expr = procPrefix();
-        // TODO: Me completar!
+        Expr left = procPrefix();
+        
+        while(current.type == TokenType.MUL ||
+                current.type == TokenType.DIV ||
+                current.type == TokenType.MOD){
+            
+            BinaryOp op = null;
+            if (current.type == TokenType.MUL){
+                op = BinaryOp.MUL;
+                advance();
+            }
+            else if(current.type == TokenType.DIV){
+                op = BinaryOp.DIV;
+                advance();
+            } 
+            else{
+                op = BinaryOp.MOD;
+                advance();
+            }
+            int line = lex.getLine();
 
-        return expr;
+            Expr right = procTerm();
+
+            left = new BinaryExpr(line, left, op, right);
+                    
+        }
+
+        return left;
     }
 
     // <prefix> ::= [ '!' | '-' | '++' | '--' ] <factor>
@@ -652,9 +677,9 @@ public class SyntaticAnalysis {
     // <lvalue> ::= <name> { '[' <expr> ']' }
     private SetExpr procLValue() {
         SetExpr expr = procName();
-        while (current.type == TokenType.OPEN_BRA) {
+        while (current.type == TokenType.OPEN_BRA) {//PERGUNTAR SE É ISSO MSM
             advance();
-            procExpr();
+            
             // TODO: nao me esquecer.
             eat(TokenType.CLOSE_BRA);
         }
@@ -664,34 +689,88 @@ public class SyntaticAnalysis {
 
     // <list> ::= '[' [ <l-elem> { ',' <l-elem> } ] ']'
     private void procList() {
+        eat(TokenType.OPEN_BRA);
+        procLElem();
+        while(current.type == TokenType.COMMA){
+            advance();
+            procLElem();
+        }
+        
+        eat(TokenType.CLOSE_BRA);
     }
 
     // <l-elem> ::= <l-single> | <l-spread> | <l-if> | <l-for>
     private void procLElem() {
+        switch (current.type) {
+            case SPREAD:
+                procLSpread();
+                break;
+                
+            case IF:
+                procLIf();
+                break;
+            
+            case FOR:
+                procLFor();
+                break;
+        
+            default:
+                procLSingle();
+                break;
+        }
     }
 
     // <l-single> ::= <expr>
     private void procLSingle() {
+        procExpr();
     }
 
     // <l-spread> ::= '...' <expr>
     private void procLSpread() {
+        eat(TokenType.SPREAD);
+        procExpr();
     }
 
     // <l-if> ::= if '(' <expr> ')' <l-elem> [ else <l-elem> ]
     private void procLIf() {
+        eat(TokenType.IF);
+        eat(TokenType.OPEN_PAR);
+        procExpr();
+        eat(TokenType.CLOSE_PAR);
+        procLElem();
+        if(current.type == TokenType.ELSE){
+            advance();
+            procLElem();
+        }
     }
 
     // <l-for> ::= for '(' <name> in <expr> ')' <l-elem>
     private void procLFor() {
+        eat(TokenType.FOR);
+        eat(TokenType.OPEN_PAR);
+        procName();
+        eat(TokenType.IN);
+        procExpr();
+        eat(TokenType.CLOSE_PAR);
+        procLElem();
     }
 
     // <map> ::= '{' [ <m-elem> { ',' <m-elem> } ] '}'
     private void procMap() {
+        eat(TokenType.OPEN_CUR);
+        procMElem();//perguntar andrei, se o <m-elemnt> é opcional
+        while(current.type == TokenType.COMMA){
+            advance();
+            procMElem();
+        }
+        eat(TokenType.CLOSE_CUR);
     }
 
     // <m-elem> ::= <expr> ':' <expr>
     private void procMElem() {
+        procExpr();
+        eat(TokenType.COLON);
+        procExpr();
     }
 
     private Variable procDeclarationName(boolean constant, boolean nullable) {
