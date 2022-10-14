@@ -1,0 +1,44 @@
+PACOTE 1 - value
+Value 
+BoolValue 
+NumberValue 
+TextValue 
+ListValue 
+MapValue 
+
+PACOTE 2 - command
+Command 
+BlocksCommand 
+WhileCommand 
+PrintCommand 
+AssignCommand 
+AssertCommand 
+DoWhileCommand
+IfCommand
+ForCommand
+
+PACOTE 3 - util
+Utils 
+
+PACOTE 4 - expr
+Expr 
+ConstExpr 
+UnaryExpr 
+UnaryOp 
+MapExpr 
+MapItem 
+BinaryExpr 
+BinaryOp 
+SetExpr 
+FunctionExpr 
+FunctionOp 
+ListExpr
+ListItem
+AcessExpr 
+Variable 
+SingleListItem
+SpreadListItem
+IfListItem
+SafeVariable 
+UnsafeVariable 
+ForListItem

@@ -9,5 +9,4 @@ public class Lexeme {
         this.token = token;
         this.type = type;
     }
-
 }

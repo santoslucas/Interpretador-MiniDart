@@ -10,12 +10,15 @@ import interpreter.command.BlocksCommand;
 import interpreter.command.Command;
 import interpreter.command.PrintCommand;
 import interpreter.command.WhileCommand;
+import interpreter.expr.AccessExpr;
 import interpreter.expr.BinaryExpr;
 import interpreter.expr.BinaryOp;
 import interpreter.expr.ConstExpr;
 import interpreter.expr.Expr;
 import interpreter.expr.FunctionExpr;
 import interpreter.expr.FunctionOp;
+import interpreter.expr.MapExpr;
+import interpreter.expr.MapItem;
 import interpreter.expr.SafeVariable;
 import interpreter.expr.SetExpr;
 import interpreter.expr.UnaryExpr;
@@ -676,15 +679,19 @@ public class SyntaticAnalysis {
 
     // <lvalue> ::= <name> { '[' <expr> ']' }
     private SetExpr procLValue() {
-        SetExpr expr = procName();
-        while (current.type == TokenType.OPEN_BRA) {//PERGUNTAR SE É ISSO MSM
+        SetExpr base = procName();
+        while (current.type == TokenType.OPEN_BRA) {
             advance();
-            
-            // TODO: nao me esquecer.
+            int line = lex.getLine();
+
+            Expr index = procExpr();
+
+            base = new AccessExpr(line, base, index);
+
             eat(TokenType.CLOSE_BRA);
         }
 
-        return expr;
+        return base;
     }
 
     // <list> ::= '[' [ <l-elem> { ',' <l-elem> } ] ']'
@@ -755,22 +762,56 @@ public class SyntaticAnalysis {
         procLElem();
     }
 
-    // <map> ::= '{' [ <m-elem> { ',' <m-elem> } ] '}'
-    private void procMap() {
+      // <map> ::= '{' [ <m-elem> { ',' <m-elem> } ] '}'
+      private MapExpr procMap() {
         eat(TokenType.OPEN_CUR);
-        procMElem();//perguntar andrei, se o <m-elemnt> é opcional
-        while(current.type == TokenType.COMMA){
-            advance();
-            procMElem();
+        int line = lex.getLine();
+
+        MapExpr mexpr = new MapExpr(line);
+
+        if (current.type == TokenType.NOT ||
+                current.type == TokenType.SUB ||
+                current.type == TokenType.INC ||
+                current.type == TokenType.DEC ||
+                current.type == TokenType.OPEN_PAR ||
+                current.type == TokenType.NULL ||
+                current.type == TokenType.FALSE ||
+                current.type == TokenType.TRUE ||
+                current.type == TokenType.NUMBER ||
+                current.type == TokenType.TEXT ||
+                current.type == TokenType.READ ||
+                current.type == TokenType.RANDOM ||
+                current.type == TokenType.LENGTH ||
+                current.type == TokenType.KEYS ||
+                current.type == TokenType.VALUES ||
+                current.type == TokenType.TOBOOL ||
+                current.type == TokenType.TOINT ||
+                current.type == TokenType.TOSTR ||
+                current.type == TokenType.NAME ||
+                current.type == TokenType.OPEN_BRA ||
+                current.type == TokenType.OPEN_CUR) {
+            MapItem item = procMElem();
+            mexpr.addItem(item);
+
+            while (current.type == TokenType.COMMA) {
+                advance();
+                item = procMElem();
+                mexpr.addItem(item);
+            }
         }
         eat(TokenType.CLOSE_CUR);
+
+        return mexpr;
     }
 
     // <m-elem> ::= <expr> ':' <expr>
-    private void procMElem() {
-        procExpr();
+    private MapItem procMElem() {
+        Expr key = procExpr();
         eat(TokenType.COLON);
-        procExpr();
+        Expr value = procExpr();
+
+        MapItem item = new MapItem(key, value);
+        return item;
     }
 
     private Variable procDeclarationName(boolean constant, boolean nullable) {

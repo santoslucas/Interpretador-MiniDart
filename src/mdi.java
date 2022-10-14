@@ -1,3 +1,5 @@
+import java.io.ObjectInputStream.GetField;
+
 import interpreter.command.Command;
 import lexical.LexicalAnalysis;
 import syntatic.SyntaticAnalysis;
@@ -29,6 +31,7 @@ public class mdi {
             //          lex.type != TokenType.UNEXPECTED_EOF);
         } catch (Exception e) {
             System.err.println("Internal error: " + e.getMessage());
+            
         }
     }
 
