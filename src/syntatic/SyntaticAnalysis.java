@@ -277,7 +277,15 @@ public class SyntaticAnalysis {
 
     // <assert> ::= assert '(' <expr> [ ',' <expr> ] ')' ';'
     private void procAssert() {
-        // TODO: me completar!
+        eat(TokenType.ASSERT);
+        eat(TokenType.OPEN_PAR);
+        procExpr();
+        if(current.type == TokenType.COMMA){
+            advance();
+            procExpr();
+        }
+        eat(TokenType.CLOSE_PAR);
+        eat(TokenType.SEMICOLON);
     }
 
     // <if> ::= if '(' <expr> ')' <body> [ else <body> ]
@@ -471,7 +479,6 @@ public class SyntaticAnalysis {
         while(current.type == TokenType.MUL ||
                 current.type == TokenType.DIV ||
                 current.type == TokenType.MOD){
-            
             BinaryOp op = null;
             if (current.type == TokenType.MUL){
                 op = BinaryOp.MUL;
@@ -709,6 +716,30 @@ public class SyntaticAnalysis {
     // <l-elem> ::= <l-single> | <l-spread> | <l-if> | <l-for>
     private void procLElem() {
         switch (current.type) {
+            case NOT:
+            case SUB:
+            case INC:
+            case DEC:
+            case OPEN_PAR:
+            case NULL:
+            case FALSE:
+            case TRUE:
+            case NUMBER:
+            case TEXT:
+            case READ:
+            case RANDOM:
+            case LENGTH:
+            case KEYS:
+            case VALUES:
+            case TOBOOL:
+            case TOINT:
+            case TOSTR:
+            case NAME:
+            case OPEN_BRA:
+            case OPEN_CUR:
+                procLSingle();
+                break;
+
             case SPREAD:
                 procLSpread();
                 break;
@@ -722,7 +753,7 @@ public class SyntaticAnalysis {
                 break;
         
             default:
-                procLSingle();
+                showError();
                 break;
         }
     }
