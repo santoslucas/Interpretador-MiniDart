@@ -1,7 +1,7 @@
 FUNCOES
 1 lenght
 2 keys
-3 values
+3 values cu
 
 Consantes
 1 listas
