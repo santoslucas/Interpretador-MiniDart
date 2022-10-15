@@ -9,6 +9,7 @@ import interpreter.command.AssertCommand;
 import interpreter.command.AssignCommand;
 import interpreter.command.BlocksCommand;
 import interpreter.command.Command;
+import interpreter.command.DoWhileCommand;
 import interpreter.command.IfCommand;
 import interpreter.command.PrintCommand;
 import interpreter.command.WhileCommand;
@@ -151,7 +152,7 @@ public class SyntaticAnalysis {
                 cmd = procWhile();
                 break;
             case DO:
-                procDoWhile();
+                cmd = procDoWhile();
                 break;
             case FOR:
                 procFor();
@@ -305,26 +306,12 @@ public class SyntaticAnalysis {
         Expr expr = procExpr();
         eat(TokenType.CLOSE_PAR);
         Command thenCmds;
-        if(current.type == TokenType.OPEN_CUR){
-            eat(TokenType.OPEN_CUR);
-            thenCmds = procBody();
-            eat(TokenType.CLOSE_CUR);
-        }
-        else{
-            thenCmds = procBody();
-        }
+        thenCmds = procBody();
 
         Command elseCmds = null;
         if (current.type == TokenType.ELSE) {
             eat(TokenType.ELSE);
-            if(current.type == TokenType.OPEN_CUR){
-                eat(TokenType.OPEN_CUR);
-                elseCmds = procBody();
-                eat(TokenType.CLOSE_CUR);
-            }
-            else{
-                elseCmds = procBody();
-            }
+            elseCmds = procBody();
         } 
         
         IfCommand ifcmd = new IfCommand(line, expr, thenCmds, elseCmds);
@@ -346,14 +333,19 @@ public class SyntaticAnalysis {
     }
 
     // <dowhile> ::= do <body> while '(' <expr> ')' ';'
-    private void procDoWhile() {
+    private DoWhileCommand procDoWhile() {
         eat(TokenType.DO);
-        procBody();
+        int line = lex.getLine();
+
+        Command cmd = procBody();
         eat(TokenType.WHILE);
         eat(TokenType.OPEN_PAR);
-        procExpr();
+        Expr expr = procExpr();
         eat(TokenType.CLOSE_PAR);
         eat(TokenType.SEMICOLON);
+
+        DoWhileCommand dwcmd = new DoWhileCommand(line, cmd, expr);
+        return dwcmd;
     }
 
     // <for> ::= for '(' <name> in <expr> ')' <body>
@@ -405,30 +397,43 @@ public class SyntaticAnalysis {
 
     // <expr> ::= <cond> [ '??' <cond> ]
     private Expr procExpr() {
-        Expr expr = procCond();
+        Expr left = procCond();
+        Expr right=null;
+        BinaryOp op=null;
         if (current.type == TokenType.IF_NULL) {
+            op = BinaryOp.IF_NULL;
             advance();
-            procCond();
+            right = procCond();
         }
 
-        return expr;
+        if(op != null){
+            int line = lex.getLine();
+            left = new BinaryExpr(line, left, op, right);
+        }
+
+        return left;
     }
 
     // <cond> ::= <rel> { ( '&&' | '||' ) <rel> }
     private Expr procCond() {
-        Expr expr = procRel();
+        Expr left = procRel();
         while (current.type == TokenType.AND ||
                 current.type == TokenType.OR) {
+            BinaryOp op = null;
             if (current.type == TokenType.AND) {
+                op = BinaryOp.AND;
                 advance();
             } else {
+                op = BinaryOp.OR;
                 advance();
             }
 
-            procRel();
+            int line = lex.getLine();
+            Expr right = procRel();
+            left = new BinaryExpr(line, left, op, right);
         }
 
-        return expr;
+        return left;
     }
 
     // <rel> ::= <arith> [ ( '<' | '>' | '<=' | '>=' | '==' | '!=' ) <arith> ]
@@ -469,10 +474,12 @@ public class SyntaticAnalysis {
                     break;
             }
 
-            int line = lex.getLine();
-            Expr right = procArith();
+            if(op != null){
+                int line = lex.getLine();
+                Expr right = procArith();
 
-            left = new BinaryExpr(line, left, op, right);
+                left = new BinaryExpr(line, left, op, right);
+            }
         }
 
         return left;
@@ -524,7 +531,7 @@ public class SyntaticAnalysis {
             }
             int line = lex.getLine();
 
-            Expr right = procTerm();
+            Expr right = procPrefix();
 
             left = new BinaryExpr(line, left, op, right);
                     
@@ -554,7 +561,7 @@ public class SyntaticAnalysis {
                     advance();
                     break;
                 default:
-                    op = UnaryOp.POS_INC;
+                    op = UnaryOp.PRE_DEC;
                     advance();
                     break;
             }
@@ -574,9 +581,10 @@ public class SyntaticAnalysis {
     // <factor> ::= ( '(' <expr> ')' | <rvalue> ) [ '++' | '--' ]
     private Expr procFactor() {
         Expr expr = null;
+        UnaryOp op = null;
         if (current.type == TokenType.OPEN_PAR) {
             advance();
-            procExpr();
+            expr = procExpr();
             eat(TokenType.CLOSE_PAR);
         } else {
             expr = procRValue();
@@ -585,10 +593,18 @@ public class SyntaticAnalysis {
         if (current.type == TokenType.INC ||
                 current.type == TokenType.DEC) {
             if (current.type == TokenType.INC) {
+                op =  UnaryOp.POS_INC;
                 advance();
             } else {
+                op =  UnaryOp.POS_DEC;
                 advance();
             }
+        }
+        int line = lex.getLine();
+
+        if (op != null) {
+            UnaryExpr ue = new UnaryExpr(line, expr, op);
+            return ue;
         }
 
         return expr;

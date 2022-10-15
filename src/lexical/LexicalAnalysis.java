@@ -48,6 +48,7 @@ public class LexicalAnalysis implements AutoCloseable {
                     } else if (c == '\n') {
                         this.line++;
                     } else if (c == '/') {
+                        lex.token += (char) c;
                         state = 2;
                     } else if (c == '=' || c == '!' || c == '<' || c == '>') {
                         lex.token += (char) c;

@@ -1,5 +1,6 @@
 package interpreter.expr;
 
+import java.util.Random;
 import java.util.Scanner;
 
 import interpreter.util.Utils;
@@ -58,7 +59,12 @@ public class FunctionExpr extends Expr {
     }
 
     private NumberValue randomOp(Value<?> v) {
-        return null;
+        NumberValue nv = (NumberValue) v;
+        int n = nv.value();
+        Random rand = new Random();
+        int r = rand.nextInt(n);
+        
+        return new NumberValue(r);
     }
 
     private NumberValue lengthOp(Value<?> v) {
@@ -74,7 +80,26 @@ public class FunctionExpr extends Expr {
     }
 
     private BoolValue toBoolOp(Value<?> v) {
-        return null;
+        boolean b;
+        if (v == null) {
+            b = false;
+        } else if (v instanceof BoolValue) {
+            BoolValue bv = (BoolValue) v;
+            boolean b1 = bv.value();
+
+            b = b1;
+        } else if (v instanceof NumberValue) {
+            NumberValue nv = (NumberValue) v;
+            int n = nv.value();
+            if(n!=0)
+                b = true;
+            else
+                b = false;
+        } else {
+            b = false;
+        }
+
+        return new BoolValue(b);
     }
 
     private NumberValue toIntOp(Value<?> v) {
@@ -106,7 +131,29 @@ public class FunctionExpr extends Expr {
     }
 
     private TextValue toStrOp(Value<?> v) {
-        return null;
+        String s;
+        if (v == null) {
+            s = "null";
+        } else if (v instanceof BoolValue) {
+            BoolValue bv = (BoolValue) v;
+            boolean b = bv.value();
+
+            if(b)
+                s = "true";
+            else
+                s = "false";
+        } else if (v instanceof NumberValue) {
+            NumberValue nv = (NumberValue) v;
+            int n = nv.value();
+            s = String.valueOf(n);
+        } else if (v instanceof TextValue) {
+            TextValue sv = (TextValue) v;
+            s = sv.value();
+        } else {
+            s = "null";
+        }
+
+        return new TextValue(s);
     }
 
 }

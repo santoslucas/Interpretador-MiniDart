@@ -1,2 +1,3 @@
-var m = false;
-assert(m, 'leroy');
+var m = true;
+var n = 8;
+print(!m);

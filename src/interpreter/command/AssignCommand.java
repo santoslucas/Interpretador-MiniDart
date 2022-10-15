@@ -18,6 +18,7 @@ public class AssignCommand extends Command {
     @Override
     public void execute() {
         Value<?> v = rhs.expr();
+
         if (lhs != null)
             lhs.setValue(v);
     }

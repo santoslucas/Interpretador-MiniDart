@@ -1,8 +1,14 @@
 package interpreter.expr;
 
+import java.util.List;
+import java.util.Map;
+
 import interpreter.util.Utils;
 import interpreter.value.BoolValue;
+import interpreter.value.ListValue;
+import interpreter.value.MapValue;
 import interpreter.value.NumberValue;
+import interpreter.value.TextValue;
 import interpreter.value.Value;
 
 public class BinaryExpr extends Expr {
@@ -59,23 +65,244 @@ public class BinaryExpr extends Expr {
     }
 
     private Value<?> ifNullOp(Value<?> v1, Value<?> v2) {
-        throw new RuntimeException("Me implemente");
+        if(v1 == null){
+            if(v2 instanceof BoolValue){
+                BoolValue nv2 = (BoolValue) v2;
+                boolean res = nv2.value();
+                BoolValue bres = new BoolValue(res);
+                return bres;
+            }
+            else if(v2 instanceof NumberValue){
+                NumberValue nv2 = (NumberValue) v2;
+                int res = nv2.value();
+                NumberValue nres = new NumberValue(res);
+                return nres;
+            }
+            else if(v2 instanceof TextValue){
+                TextValue nv2 = (TextValue) v2;
+                String res = nv2.value();
+                TextValue nres = new TextValue(res);
+                return nres;
+            }
+            else if(v2 instanceof ListValue){
+                ListValue nv2 = (ListValue) v2;
+                List <Value<?>> res = nv2.value();
+                ListValue lres = new ListValue(res);
+                return lres;
+            }
+            else if(v2 instanceof MapValue){
+                MapValue nv2 = (MapValue) v2;
+                Map<Value<?>, Value<?>> res = nv2.value();
+                MapValue mres = new MapValue(res);
+                return mres;
+            }
+            else{
+                Utils.abort(super.getLine());
+                return null;
+            }
+        }
+        else{
+            if(v1 instanceof BoolValue){
+                BoolValue nv1 = (BoolValue) v1;
+                boolean res = nv1.value();
+                BoolValue bres = new BoolValue(res);
+                return bres;
+            }
+            else if(v1 instanceof NumberValue){
+                NumberValue nv1 = (NumberValue) v1;
+                int res = nv1.value();
+                NumberValue nres = new NumberValue(res);
+                return nres;
+            }
+            else if(v1 instanceof TextValue){
+                TextValue nv1 = (TextValue) v1;
+                String res = nv1.value();
+                TextValue nres = new TextValue(res);
+                return nres;
+            }
+            else if(v1 instanceof ListValue){
+                ListValue nv1 = (ListValue) v1;
+                List <Value<?>> res = nv1.value();
+                ListValue lres = new ListValue(res);
+                return lres;
+            }
+            else if(v1 instanceof MapValue){
+                MapValue nv1 = (MapValue) v1;
+                Map<Value<?>, Value<?>> res = nv1.value();
+                MapValue mres = new MapValue(res);
+                return mres;
+            }
+            else{
+                Utils.abort(super.getLine());
+                return null;
+            }
+        }
     }
 
     private Value<?> andOp(Value<?> v1, Value<?> v2) {
-        throw new RuntimeException("Me implemente");
+        if (v1 instanceof NumberValue && v2 instanceof NumberValue) {
+            NumberValue nv1 = (NumberValue) v1;
+            NumberValue nv2 = (NumberValue) v2;
+
+            int n1 = nv1.value();
+            int n2 = nv2.value();
+            boolean res = false;
+
+            if((n1 != 0 ) && (n2 != 0 )){
+                res = true;
+            }
+            
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        } 
+        else if (v1 instanceof NumberValue && v2 instanceof BoolValue) {
+            NumberValue nv1 = (NumberValue) v1;
+            BoolValue nv2 = (BoolValue) v2;
+
+            int n1 = nv1.value();
+            boolean n2 = nv2.value();
+            boolean res = false;
+
+            if((n1 != 0 ) && n2){
+                res = true;
+            }
+            
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        }
+
+        else if (v1 instanceof BoolValue && v2 instanceof NumberValue) {
+            BoolValue nv1 = (BoolValue) v1;
+            NumberValue nv2 = (NumberValue) v2;
+
+            Boolean n1 = nv1.value();
+            int n2 = nv2.value();
+            boolean res = false;
+
+            if((n2 != 0 ) && n1){
+                res = true;
+            }
+            
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        }
+
+        else if (v1 instanceof BoolValue && v2 instanceof BoolValue) {
+            BoolValue nv1 = (BoolValue) v1;
+            BoolValue nv2 = (BoolValue) v2;
+
+            boolean n1 = nv1.value();
+            boolean n2 = nv2.value();
+            boolean res = false;
+
+            if((n1 && n2)){
+                res = true;
+            }
+            
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        }
+        
+        else {
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
 
     private Value<?> orOp(Value<?> v1, Value<?> v2) {
-        throw new RuntimeException("Me implemente");
+        if (v1 instanceof NumberValue && v2 instanceof NumberValue) {
+            NumberValue nv1 = (NumberValue) v1;
+            NumberValue nv2 = (NumberValue) v2;
+
+            int n1 = nv1.value();
+            int n2 = nv2.value();
+            boolean res = false;
+
+            if((n1 != 0 ) || (n2 != 0 )){
+                res = true;
+            }
+            
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        } 
+        else if (v1 instanceof NumberValue && v2 instanceof BoolValue) {
+            NumberValue nv1 = (NumberValue) v1;
+            BoolValue nv2 = (BoolValue) v2;
+
+            int n1 = nv1.value();
+            boolean n2 = nv2.value();
+            boolean res = false;
+
+            if((n1 != 0 ) || n2){
+                res = true;
+            }
+            
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        }
+
+        else if (v1 instanceof BoolValue && v2 instanceof NumberValue) {
+            BoolValue nv1 = (BoolValue) v1;
+            NumberValue nv2 = (NumberValue) v2;
+
+            Boolean n1 = nv1.value();
+            int n2 = nv2.value();
+            boolean res = false;
+
+            if((n2 != 0 ) || n1){
+                res = true;
+            }
+            
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        }
+
+        else if (v1 instanceof BoolValue && v2 instanceof BoolValue) {
+            BoolValue nv1 = (BoolValue) v1;
+            BoolValue nv2 = (BoolValue) v2;
+
+            boolean n1 = nv1.value();
+            boolean n2 = nv2.value();
+            boolean res = false;
+
+            if((n1 || n2)){
+                res = true;
+            }
+            
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        }
+        
+        else {
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
 
     private Value<?> equalOp(Value<?> v1, Value<?> v2) {
-        throw new RuntimeException("Me implemente");
+        boolean res = false;
+
+        if(v1.equals(v2)){
+            res = true;
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        } else {
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
 
     private Value<?> notEqualOp(Value<?> v1, Value<?> v2) {
-        throw new RuntimeException("Me implemente");
+        boolean res = true;
+
+        if(v1.equals(v2)){
+            res = false;
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        } else {
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
 
     private Value<?> lowerThanOp(Value<?> v1, Value<?> v2) {
@@ -147,7 +374,20 @@ public class BinaryExpr extends Expr {
     }
 
     private Value<?> addOp(Value<?> v1, Value<?> v2) {
-        throw new RuntimeException("Me implemente");
+        if (v1 instanceof NumberValue && v2 instanceof NumberValue) {
+            NumberValue nv1 = (NumberValue) v1;
+            NumberValue nv2 = (NumberValue) v2;
+
+            int n1 = nv1.value();
+            int n2 = nv2.value();
+            int res = n1 + n2;
+
+            NumberValue nres = new NumberValue(res);
+            return nres;
+        } else {
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
 
     private Value<?> subOp(Value<?> v1, Value<?> v2) {

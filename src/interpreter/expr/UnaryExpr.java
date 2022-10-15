@@ -66,19 +66,63 @@ public class UnaryExpr extends Expr {
     }
     
     private Value<?> preIncOp() {
-        throw new RuntimeException("Me implemente!");
+        Value<?> v = expr.expr();
+        if (v instanceof NumberValue) {
+            NumberValue nv = (NumberValue) v;
+            Integer n = nv.value();
+            ++n;
+            NumberValue res = new NumberValue(n);
+            return res;
+        }
+        else{
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
     
     private Value<?> posIncOp() {
-        throw new RuntimeException("Me implemente!");
+        Value<?> v = expr.expr();
+        if (v instanceof NumberValue) {
+            NumberValue nv = (NumberValue) v;
+            Integer n = nv.value();
+            n++;
+            NumberValue res = new NumberValue(n);
+            return res;
+        }
+        else{
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
     
     private Value<?> preDecOp() {
-        throw new RuntimeException("Me implemente!");
+        Value<?> v = expr.expr();
+        if (v instanceof NumberValue) {
+            NumberValue nv = (NumberValue) v;
+            Integer n = nv.value();
+            --n;
+            NumberValue res = new NumberValue(n);
+            return res;
+        }
+        else{
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
     
     private Value<?> posDecOp() {
-        throw new RuntimeException("Me implemente!");
+        Value<?> v = expr.expr();
+        if (v instanceof NumberValue) {
+            NumberValue nv = (NumberValue) v;
+            Integer n = nv.value();
+            n--;
+            NumberValue res = new NumberValue(n);
+            return res;
+        }
+        else{
+            Utils.abort(super.getLine());
+            return null;
+        }
     }
     
 }

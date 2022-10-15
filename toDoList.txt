@@ -1,44 +1,16 @@
-PACOTE 1 - value
-Value X
-BoolValue X
-NumberValue X
-TextValue X
-ListValue X
-MapValue X
+FUNCOES
+1 lenght
+2 keys
+3 values
 
-PACOTE 2 - command
-Command X
-BlocksCommand X
-WhileCommand X
-PrintCommand X
-AssignCommand X
-AssertCommand X
-DoWhileCommand X
-IfCommand X
-ForCommand X
+Consantes
+1 listas
+2 mapas
 
-PACOTE 3 - util
-Utils X
+Operadores 
+1 var? = null
+2 String,	lista e	mapa:	+ (concatenação)
 
-PACOTE 4 - expr
-Expr X
-ConstExpr X
-UnaryExpr X
-UnaryOp X
-MapExpr X
-MapItem X
-BinaryExpr X
-BinaryOp X
-SetExpr X
-FunctionExpr X
-FunctionOp X
-ListExpr 
-ListItem X
-AcessExpr X
-Variable X
-SingleListItem
-SpreadListItem
-IfListItem
-SafeVariable X
-UnsafeVariable X
-ForListItem
+Expressoes
+1 ListItem (todos os tipos)
+2 verificar todas as classes
