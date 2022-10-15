@@ -1,44 +1,44 @@
 PACOTE 1 - value
-Value 
-BoolValue 
-NumberValue 
-TextValue 
-ListValue 
-MapValue 
+Value X
+BoolValue X
+NumberValue X
+TextValue X
+ListValue X
+MapValue X
 
 PACOTE 2 - command
-Command 
-BlocksCommand 
-WhileCommand 
-PrintCommand 
-AssignCommand 
-AssertCommand 
-DoWhileCommand
-IfCommand
-ForCommand
+Command X
+BlocksCommand X
+WhileCommand X
+PrintCommand X
+AssignCommand X
+AssertCommand X
+DoWhileCommand X
+IfCommand X
+ForCommand X
 
 PACOTE 3 - util
-Utils 
+Utils X
 
 PACOTE 4 - expr
-Expr 
-ConstExpr 
-UnaryExpr 
-UnaryOp 
-MapExpr 
-MapItem 
-BinaryExpr 
-BinaryOp 
-SetExpr 
-FunctionExpr 
-FunctionOp 
-ListExpr
-ListItem
-AcessExpr 
-Variable 
+Expr X
+ConstExpr X
+UnaryExpr X
+UnaryOp X
+MapExpr X
+MapItem X
+BinaryExpr X
+BinaryOp X
+SetExpr X
+FunctionExpr X
+FunctionOp X
+ListExpr 
+ListItem X
+AcessExpr X
+Variable X
 SingleListItem
 SpreadListItem
 IfListItem
-SafeVariable 
-UnsafeVariable 
+SafeVariable X
+UnsafeVariable X
 ForListItem

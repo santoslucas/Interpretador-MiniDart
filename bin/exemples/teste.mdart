@@ -1,0 +1,2 @@
+var m = false;
+assert(m, 'leroy');

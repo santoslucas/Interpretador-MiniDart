@@ -92,8 +92,6 @@ public class LexicalAnalysis implements AutoCloseable {
                         lex.type = TokenType.INVALID_TOKEN;
                         state = 16;
                     }
-                    // TODO: Continuar!
-                    // PERGUNTAR ANDREISON
                     break;
                 case 2:
                     if(c == '/'){
@@ -106,13 +104,17 @@ public class LexicalAnalysis implements AutoCloseable {
                     }
                     break;
                 case 3:
-                    if(c == '\n'){
-                        state = 1;
-                    }
-                    else{
+                    if (c == '\n'){
                         this.line++;
+                        lex.token += (char) c;
+                        state = 1;
+                    } else if (c == -1) {
+                        lex.type = TokenType.END_OF_FILE;
+                        state = 16;
+                    } else{
                         state = 3;
-                    }
+                    } 
+                    
                     break;
                 case 4:
                     if (c == '=') {
@@ -213,18 +215,14 @@ public class LexicalAnalysis implements AutoCloseable {
                     }
                     else{
                         ungetc(c);
-                        lex.token += (char) c;
+                        lex.type = TokenType.NUMBER;
                         state = 16;
                     }
                     break;
                 case 14:
                     if(c == '\''){
-                        lex.token += (char) c;
+                        lex.type = TokenType.TEXT;        
                         state = 16;
-                    }
-                    else if(c == '\n'){
-                        this.line++;
-                        state = 14;
                     }
                     else{
                         lex.token += (char) c;

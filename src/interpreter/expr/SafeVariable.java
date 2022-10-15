@@ -1,5 +1,6 @@
 package interpreter.expr;
 
+import interpreter.util.Utils;
 import interpreter.value.Value;
 
 public class SafeVariable extends Variable {
@@ -14,10 +15,17 @@ public class SafeVariable extends Variable {
     }
 
     public Value<?> expr() {
-        throw new RuntimeException("implementar expr (SafeVariable)");
+        if (!initialized)
+            Utils.abort(super.getLine());
+
+        return value;
     }
 
     public void setValue(Value<?> value) {
-        throw new RuntimeException("implementar setValue (SafeVariable)");
+        if ((initialized && super.isConstant()) || value == null)
+            Utils.abort(super.getLine());
+
+        this.value = value;
+        this.initialized = true;
     }
 }

@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import interpreter.command.AssertCommand;
 import interpreter.command.AssignCommand;
 import interpreter.command.BlocksCommand;
 import interpreter.command.Command;
+import interpreter.command.IfCommand;
 import interpreter.command.PrintCommand;
 import interpreter.command.WhileCommand;
 import interpreter.expr.AccessExpr;
@@ -140,10 +142,10 @@ public class SyntaticAnalysis {
                 cmd = procPrint();
                 break;
             case ASSERT:
-                procAssert();
+                cmd = procAssert();
                 break;
             case IF:
-                procIf();
+                cmd = procIf();
                 break;
             case WHILE:
                 cmd = procWhile();
@@ -276,29 +278,57 @@ public class SyntaticAnalysis {
     }
 
     // <assert> ::= assert '(' <expr> [ ',' <expr> ] ')' ';'
-    private void procAssert() {
+    private AssertCommand procAssert() {
         eat(TokenType.ASSERT);
+        int line = lex.getLine();
+
         eat(TokenType.OPEN_PAR);
-        procExpr();
+        Expr expr = procExpr();
+        Expr msg = null;
         if(current.type == TokenType.COMMA){
-            advance();
-            procExpr();
+            eat(TokenType.COMMA);
+            msg = procExpr();
         }
         eat(TokenType.CLOSE_PAR);
         eat(TokenType.SEMICOLON);
+
+        AssertCommand asscmd = new AssertCommand(line, expr, msg);
+        return asscmd;
     }
 
     // <if> ::= if '(' <expr> ')' <body> [ else <body> ]
-    private void procIf() {
+    private IfCommand procIf() {
         eat(TokenType.IF);
+        int line = lex.getLine();
+
         eat(TokenType.OPEN_PAR);
-        procExpr();
+        Expr expr = procExpr();
         eat(TokenType.CLOSE_PAR);
-        procBody();
+        Command thenCmds;
+        if(current.type == TokenType.OPEN_CUR){
+            eat(TokenType.OPEN_CUR);
+            thenCmds = procBody();
+            eat(TokenType.CLOSE_CUR);
+        }
+        else{
+            thenCmds = procBody();
+        }
+
+        Command elseCmds = null;
         if (current.type == TokenType.ELSE) {
-            advance();
-            procBody();
-        }   
+            eat(TokenType.ELSE);
+            if(current.type == TokenType.OPEN_CUR){
+                eat(TokenType.OPEN_CUR);
+                elseCmds = procBody();
+                eat(TokenType.CLOSE_CUR);
+            }
+            else{
+                elseCmds = procBody();
+            }
+        } 
+        
+        IfCommand ifcmd = new IfCommand(line, expr, thenCmds, elseCmds);
+        return ifcmd;
     }
 
     // <while> ::= while '(' <expr> ')' <body>
@@ -712,7 +742,7 @@ public class SyntaticAnalysis {
         
         eat(TokenType.CLOSE_BRA);
     }
-
+    
     // <l-elem> ::= <l-single> | <l-spread> | <l-if> | <l-for>
     private void procLElem() {
         switch (current.type) {
