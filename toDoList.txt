@@ -1,16 +1,11 @@
 FUNCOES
 1 lenght
 2 keys
-3 values cu
+3 values 
+4 adpatar as demais
 
 Consantes
-1 listas
-2 mapas
-
-Operadores 
-1 var? = null
-2 String,	lista e	mapa:	+ (concatenação)
+1 int e booleanos
 
 Expressoes
-1 ListItem (todos os tipos)
-2 verificar todas as classes
+1 verificar todas as classes

@@ -1,5 +1,7 @@
 package interpreter.expr;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -287,8 +289,9 @@ public class BinaryExpr extends Expr {
             BoolValue bres = new BoolValue(res);
             return bres;
         } else {
-            Utils.abort(super.getLine());
-            return null;
+            res = false;
+            BoolValue bres = new BoolValue(res);
+            return bres;
         }
     }
 
@@ -384,7 +387,45 @@ public class BinaryExpr extends Expr {
 
             NumberValue nres = new NumberValue(res);
             return nres;
-        } else {
+
+        }  if (v1 instanceof TextValue && v2 instanceof TextValue) {
+            TextValue nv1 = (TextValue) v1;
+            TextValue nv2 = (TextValue) v2;
+
+            String n1 = nv1.value();
+            String n2 = nv2.value();
+            String res = n1 + n2;
+
+            TextValue nres = new TextValue(res);
+            return nres;
+
+        } if (v1 instanceof ListValue && v2 instanceof ListValue) {
+            ListValue nv1 = (ListValue) v1;
+            ListValue nv2 = (ListValue) v2;
+
+            List<Value<?>> n1 = nv1.value();
+            List<Value<?>> n2 = nv2.value();
+            List<Value<?>> res = new ArrayList<Value<?>>();
+            res.addAll(n1);
+            res.addAll(n2);
+
+            ListValue nres = new ListValue(res);
+            return nres;
+
+        }if (v1 instanceof MapValue && v2 instanceof MapValue) {
+            MapValue nv1 = (MapValue) v1;
+            MapValue nv2 = (MapValue) v2;
+
+            Map<Value<?>, Value<?>> n1 = nv1.value();
+            Map<Value<?>, Value<?>> n2 = nv2.value();
+            Map<Value<?>, Value<?>> res = new HashMap<Value<?>, Value<?>>();
+            res.putAll(n1);
+            res.putAll(n2);
+
+            MapValue nres = new MapValue(res);
+            return nres;
+
+        }else {
             Utils.abort(super.getLine());
             return null;
         }

@@ -3,6 +3,7 @@ package interpreter.expr;
 import java.util.ArrayList;
 import java.util.List;
 
+import interpreter.value.ListValue;
 import interpreter.value.Value;
 
 public class ListExpr extends Expr{
@@ -21,16 +22,10 @@ public class ListExpr extends Expr{
     public Value<?> expr() {
         List<Value<?>> l = new ArrayList<Value<?>>();
 
-        /*for(ListItem item : list){
-            Value<?> expr = item.expr.;
-            if (key == null)
-                Utils.abort(super.getLine());
-                
-            Value<?> value = item.value.expr();
+        for(ListItem item : list){
+            l.addAll(item.items());
+        }
 
-            m.put(key, value);
-        }*/
-
-        return null;
+        return new ListValue(l);
     }    
 }

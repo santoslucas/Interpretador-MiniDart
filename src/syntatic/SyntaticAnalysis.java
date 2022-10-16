@@ -10,6 +10,7 @@ import interpreter.command.AssignCommand;
 import interpreter.command.BlocksCommand;
 import interpreter.command.Command;
 import interpreter.command.DoWhileCommand;
+import interpreter.command.ForCommand;
 import interpreter.command.IfCommand;
 import interpreter.command.PrintCommand;
 import interpreter.command.WhileCommand;
@@ -18,12 +19,18 @@ import interpreter.expr.BinaryExpr;
 import interpreter.expr.BinaryOp;
 import interpreter.expr.ConstExpr;
 import interpreter.expr.Expr;
+import interpreter.expr.ForListItem;
 import interpreter.expr.FunctionExpr;
 import interpreter.expr.FunctionOp;
+import interpreter.expr.IfListItem;
+import interpreter.expr.ListExpr;
+import interpreter.expr.ListItem;
 import interpreter.expr.MapExpr;
 import interpreter.expr.MapItem;
 import interpreter.expr.SafeVariable;
 import interpreter.expr.SetExpr;
+import interpreter.expr.SingleListItem;
+import interpreter.expr.SpreadListItem;
 import interpreter.expr.UnaryExpr;
 import interpreter.expr.UnaryOp;
 import interpreter.expr.UnsafeVariable;
@@ -155,7 +162,7 @@ public class SyntaticAnalysis {
                 cmd = procDoWhile();
                 break;
             case FOR:
-                procFor();
+                cmd = procFor();
                 break;
             case NOT:
             case SUB:
@@ -349,14 +356,19 @@ public class SyntaticAnalysis {
     }
 
     // <for> ::= for '(' <name> in <expr> ')' <body>
-    private void procFor() {
+    private ForCommand procFor() {
         eat(TokenType.FOR);
+        int line = lex.getLine();
         eat(TokenType.OPEN_PAR);
-        procName();
+        Variable var = procName();
         eat(TokenType.IN);
-        procExpr();
+        Expr expr = procExpr();
         eat(TokenType.CLOSE_PAR);
-        procBody();
+        Command cmds = procBody();
+
+        ForCommand fcmd = new ForCommand(line, var, expr, cmds);
+
+        return fcmd;
     }
 
     // <body> ::= <cmd> | '{' <code> '}'
@@ -635,10 +647,10 @@ public class SyntaticAnalysis {
                 expr = procLValue();
                 break;
             case OPEN_BRA:
-                procList();
+                expr = procList();
                 break;
             case OPEN_CUR:
-                procMap();
+                expr = procMap();
                 break;
             default:
                 showError();
@@ -748,19 +760,28 @@ public class SyntaticAnalysis {
     }
 
     // <list> ::= '[' [ <l-elem> { ',' <l-elem> } ] ']'
-    private void procList() {
+    private ListExpr procList() {
+        int line = lex.getLine();
+        ListExpr listExpr = new ListExpr(line);
+
         eat(TokenType.OPEN_BRA);
-        procLElem();
-        while(current.type == TokenType.COMMA){
-            advance();
-            procLElem();
+        if(current.type != TokenType.CLOSE_BRA){
+            listExpr.addItem(procLElem());
+
+            while(current.type == TokenType.COMMA){
+                advance();
+                listExpr.addItem(procLElem());
+            }
         }
         
         eat(TokenType.CLOSE_BRA);
+
+        return listExpr;
     }
     
     // <l-elem> ::= <l-single> | <l-spread> | <l-if> | <l-for>
-    private void procLElem() {
+    private ListItem procLElem() {
+        ListItem listItem = null;
         switch (current.type) {
             case NOT:
             case SUB:
@@ -783,60 +804,84 @@ public class SyntaticAnalysis {
             case NAME:
             case OPEN_BRA:
             case OPEN_CUR:
-                procLSingle();
+                listItem = procLSingle();
                 break;
 
             case SPREAD:
-                procLSpread();
+                listItem = procLSpread();
                 break;
                 
             case IF:
-                procLIf();
+                listItem = procLIf();
                 break;
             
             case FOR:
-                procLFor();
+                listItem = procLFor();
                 break;
         
             default:
                 showError();
                 break;
         }
+        return listItem;
     }
 
     // <l-single> ::= <expr>
-    private void procLSingle() {
-        procExpr();
+    private SingleListItem procLSingle() {
+        int line = lex.getLine();
+        Expr expr = procExpr();
+        SingleListItem sl = new SingleListItem(line, expr);
+
+        return sl;
     }
 
     // <l-spread> ::= '...' <expr>
-    private void procLSpread() {
+    private SpreadListItem procLSpread() {
         eat(TokenType.SPREAD);
-        procExpr();
+        int line = lex.getLine();
+        Expr expr = procExpr();
+        
+        SpreadListItem l = new SpreadListItem(line, expr);
+
+        return l;
     }
 
     // <l-if> ::= if '(' <expr> ')' <l-elem> [ else <l-elem> ]
-    private void procLIf() {
+    private IfListItem procLIf() {
         eat(TokenType.IF);
+        int line = lex.getLine();
+
         eat(TokenType.OPEN_PAR);
-        procExpr();
+        Expr expr = procExpr();
         eat(TokenType.CLOSE_PAR);
-        procLElem();
+
+        ListItem thenItem = procLElem();
+        ListItem esleItem = null;
         if(current.type == TokenType.ELSE){
             advance();
-            procLElem();
+            esleItem = procLElem();
         }
+        IfListItem il = new IfListItem(line, expr, thenItem, esleItem);
+
+        return il;
     }
 
     // <l-for> ::= for '(' <name> in <expr> ')' <l-elem>
-    private void procLFor() {
+    private ForListItem procLFor() {
         eat(TokenType.FOR);
+        int line = lex.getLine();
+
         eat(TokenType.OPEN_PAR);
-        procName();
+        Variable var = procName();
         eat(TokenType.IN);
-        procExpr();
+        Expr expr = procExpr();
         eat(TokenType.CLOSE_PAR);
-        procLElem();
+
+        ListItem item = procLElem();
+
+        ForListItem fl = new ForListItem(line, var, expr, item);
+
+        return fl;
     }
 
       // <map> ::= '{' [ <m-elem> { ',' <m-elem> } ] '}'

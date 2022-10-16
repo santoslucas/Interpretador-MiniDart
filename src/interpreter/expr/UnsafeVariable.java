@@ -16,7 +16,7 @@ public class UnsafeVariable extends Variable {
 
     public Value<?> expr() {
         if (!initialized)
-            Utils.abort(super.getLine());
+           return null;
 
         return value;
     }

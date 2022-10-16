@@ -1,28 +1,28 @@
-package interpreter.command;
+package interpreter.expr;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import interpreter.expr.Expr;
-import interpreter.expr.Variable;
 import interpreter.util.Utils;
 import interpreter.value.ListValue;
 import interpreter.value.Value;
 
-public class ForCommand extends Command {
+public class ForListItem extends ListItem{
     private Variable var;
     private Expr expr;
-    private Command cmds;
+    private ListItem item;
 
-    public ForCommand(int line, Variable var, Expr expr, Command cmds) {
+    public ForListItem(int line, Variable var, Expr expr, ListItem item) {
         super(line);
         this.var = var;
         this.expr = expr;
-        this.cmds = cmds;
+        this.item = item;
     }
 
     @Override
-    public void execute() {
+    public List<Value<?>> items() {
+        List<Value<?>> l = new ArrayList<Value<?>>();
+        
         Value<?> v = expr.expr();
         if (!(v instanceof ListValue))
                 Utils.abort(super.getLine());
@@ -31,7 +31,10 @@ public class ForCommand extends Command {
 
             for (Value<?> variable : lv.value()) {
                 var.setValue(variable);
-                cmds.execute();
+                l.addAll(item.items());
             }
+            
+        return l;
     }
+    
 }

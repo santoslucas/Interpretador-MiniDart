@@ -1,11 +1,16 @@
 package interpreter.expr;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
 import interpreter.util.Utils;
 import interpreter.value.BoolValue;
 import interpreter.value.ListValue;
+import interpreter.value.MapValue;
 import interpreter.value.NumberValue;
 import interpreter.value.TextValue;
 import interpreter.value.Value;
@@ -68,6 +73,16 @@ public class FunctionExpr extends Expr {
     }
 
     private NumberValue lengthOp(Value<?> v) {
+        if (v instanceof ListValue){
+            ListValue lv = (ListValue) v;
+
+            int length = 0;
+            for (Value<?> variable : lv.value()) {
+                length++;
+            }
+            return (new NumberValue(length));
+            
+        }else{Utils.abort(super.getLine());}
         return null;
     }
 
@@ -95,7 +110,25 @@ public class FunctionExpr extends Expr {
                 b = true;
             else
                 b = false;
-        } else {
+        } else if (v instanceof ListValue) {
+            ListValue lv = (ListValue) v;
+            List<Value<?>> l = new ArrayList<Value<?>>(lv.value());
+            List<Value<?>> vazio = new ArrayList<Value<?>>();
+            if(l.equals(vazio))
+                b = false;
+            else
+                b = true;
+
+        }else if (v instanceof MapValue) {
+            MapValue mv = (MapValue) v;
+            Map<Value<?>, Value<?>> m = new HashMap<Value<?>, Value<?>>(mv.value());
+            Map<Value<?>, Value<?>> vazio = new HashMap<Value<?>, Value<?>>();
+            if(m.equals(vazio))
+                b = false;
+            else
+                b = true;
+
+        }else {
             b = false;
         }
 
@@ -149,7 +182,14 @@ public class FunctionExpr extends Expr {
         } else if (v instanceof TextValue) {
             TextValue sv = (TextValue) v;
             s = sv.value();
-        } else {
+        } else if (v instanceof ListValue) {
+            ListValue lv = (ListValue) v;
+            s = lv.toString();
+        } else if (v instanceof MapValue) {
+            MapValue mv = (MapValue) v;
+            s = mv.toString();
+        }
+        else {
             s = "null";
         }
 
