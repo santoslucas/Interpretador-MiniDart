@@ -69,10 +69,21 @@ public class UnaryExpr extends Expr {
         Value<?> v = expr.expr();
         if (v instanceof NumberValue) {
             NumberValue nv = (NumberValue) v;
-            Integer n = nv.value();
-            ++n;
-            NumberValue res = new NumberValue(n);
-            return res;
+            int n = nv.value();
+            int res = ++n;
+
+            if(expr instanceof SafeVariable){
+                ((SafeVariable) expr).setValue(new NumberValue(n));
+            }
+            else if(expr instanceof UnsafeVariable){
+                ((UnsafeVariable) expr).setValue(new NumberValue(n));
+            }
+            else if(expr instanceof AccessExpr){
+                ((AccessExpr) expr).setValue(new NumberValue(n));
+            }
+
+            NumberValue nres = new NumberValue(res);
+            return nres;
         }
         else{
             Utils.abort(super.getLine());
@@ -84,10 +95,21 @@ public class UnaryExpr extends Expr {
         Value<?> v = expr.expr();
         if (v instanceof NumberValue) {
             NumberValue nv = (NumberValue) v;
-            Integer n = nv.value();
-            n++;
-            NumberValue res = new NumberValue(n);
-            return res;
+            int n = nv.value();
+            int res = n++;
+
+            if(expr instanceof SafeVariable){
+                ((SafeVariable) expr).setValue(new NumberValue(n));
+            }
+            else if(expr instanceof UnsafeVariable){
+                ((UnsafeVariable) expr).setValue(new NumberValue(n));
+            }
+            else if(expr instanceof AccessExpr){
+                ((AccessExpr) expr).setValue(new NumberValue(n));
+            }
+
+            NumberValue nres = new NumberValue(res);
+            return nres;
         }
         else{
             Utils.abort(super.getLine());
@@ -99,10 +121,21 @@ public class UnaryExpr extends Expr {
         Value<?> v = expr.expr();
         if (v instanceof NumberValue) {
             NumberValue nv = (NumberValue) v;
-            Integer n = nv.value();
-            --n;
-            NumberValue res = new NumberValue(n);
-            return res;
+            int n = nv.value();
+            int res = --n;
+
+            if(expr instanceof SafeVariable){
+                ((SafeVariable) expr).setValue(new NumberValue(n));
+            }
+            else if(expr instanceof UnsafeVariable){
+                ((UnsafeVariable) expr).setValue(new NumberValue(n));
+            }
+            else if(expr instanceof AccessExpr){
+                ((AccessExpr) expr).setValue(new NumberValue(n));
+            }
+
+            NumberValue nres = new NumberValue(res);
+            return nres;
         }
         else{
             Utils.abort(super.getLine());
@@ -114,10 +147,21 @@ public class UnaryExpr extends Expr {
         Value<?> v = expr.expr();
         if (v instanceof NumberValue) {
             NumberValue nv = (NumberValue) v;
-            Integer n = nv.value();
-            n--;
-            NumberValue res = new NumberValue(n);
-            return res;
+            int n = nv.value();
+            int res = n--;
+
+            if(expr instanceof SafeVariable){
+                ((SafeVariable) expr).setValue(new NumberValue(n));
+            }
+            else if(expr instanceof UnsafeVariable){
+                ((UnsafeVariable) expr).setValue(new NumberValue(n));
+            }
+            else if(expr instanceof AccessExpr){
+                ((AccessExpr) expr).setValue(new NumberValue(n));
+            }
+
+            NumberValue nres = new NumberValue(res);
+            return nres;
         }
         else{
             Utils.abort(super.getLine());

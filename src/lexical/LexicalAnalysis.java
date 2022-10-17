@@ -96,7 +96,6 @@ public class LexicalAnalysis implements AutoCloseable {
                     break;
                 case 2:
                     if(c == '/'){
-                        //lex.token += (char) c;
                         state = 3;
                     }
                     else{
@@ -108,7 +107,6 @@ public class LexicalAnalysis implements AutoCloseable {
                 case 3:
                     if (c == '\n'){
                         this.line++;
-                        //lex.token += (char) c;
                         state = 1;
                     } else if (c == -1) {
                         lex.type = TokenType.END_OF_FILE;

@@ -284,6 +284,25 @@ public class BinaryExpr extends Expr {
     private Value<?> equalOp(Value<?> v1, Value<?> v2) {
         boolean res = false;
 
+        if(v1 == null){
+            if(v2 == null){
+                res = true;
+                BoolValue bres = new BoolValue(res);
+                return bres;
+            }
+            else{
+                res = false;
+                BoolValue bres = new BoolValue(res);
+                return bres;
+            }
+        }
+
+        if(v2 == null){
+            res = false;
+            BoolValue bres = new BoolValue(res);
+            return bres;
+        }
+
         if(v1.equals(v2)){
             res = true;
             BoolValue bres = new BoolValue(res);

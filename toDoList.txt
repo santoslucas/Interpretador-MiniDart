@@ -1,9 +1,3 @@
-FUNCOES
-1 lenght
-2 keys
-3 values 
-4 adpatar as demais
-
 Consantes
 1 int e booleanos
 

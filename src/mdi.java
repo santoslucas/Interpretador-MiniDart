@@ -9,13 +9,13 @@ import syntatic.SyntaticAnalysis;
 public class mdi {
 
     public static void main(String[] args) {
-       /* if (args.length != 1) {
+       if (args.length != 1) {
             System.out.println("Usage: java mdi [miniDart file]");
             return;
-        }*/
-        String leroy = "./bin/exemples/teste.mdart";
+        }
+        //String leroy = "./bin/exemples/teste.mdart";
 
-        try (LexicalAnalysis l = new LexicalAnalysis(leroy)) {
+        try (LexicalAnalysis l = new LexicalAnalysis(args[0])) {
             // O código a seguir é dado para testar o interpretador.
             // TODO: descomentar depois que o analisador léxico estiver OK.
             SyntaticAnalysis s = new SyntaticAnalysis(l);
@@ -37,5 +37,4 @@ public class mdi {
             
         }
     }
-
 }

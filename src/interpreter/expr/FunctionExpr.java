@@ -82,16 +82,41 @@ public class FunctionExpr extends Expr {
             }
             return (new NumberValue(length));
             
-        }else{Utils.abort(super.getLine());}
-        return null;
+        }else{Utils.abort(super.getLine()); return null;}
     }
 
     private ListValue keysOp(Value<?> v) {
-        return null;
+        if (v instanceof MapValue){
+            MapValue mv = (MapValue) v;
+            Map<Value<?>, Value<?>> m = new HashMap<Value<?>, Value<?>>(mv.value());
+
+            List <Value<?>> l = new ArrayList<Value<?>>();
+            for (Map.Entry<Value<?>, Value<?>> pair : m.entrySet()) {
+                Value<?> key = pair.getKey();
+                if (key == null)
+                    Utils.abort(super.getLine());
+                l.add(key);
+            }
+
+            return new ListValue(l);
+        }else{Utils.abort(super.getLine()); return null;}
     }
 
     private ListValue valuesOp(Value<?> v) {
-        return null;
+        if (v instanceof MapValue){
+            MapValue mv = (MapValue) v;
+            Map<Value<?>, Value<?>> m = new HashMap<Value<?>, Value<?>>(mv.value());
+
+            List <Value<?>> l = new ArrayList<Value<?>>();
+            for (Map.Entry<Value<?>, Value<?>> pair : m.entrySet()) {
+                Value<?> value = pair.getValue();
+                if (value == null)
+                    Utils.abort(super.getLine());
+                l.add(value);
+            }
+
+            return new ListValue(l);
+        }else{Utils.abort(super.getLine()); return null;}
     }
 
     private BoolValue toBoolOp(Value<?> v) {

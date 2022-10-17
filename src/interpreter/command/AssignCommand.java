@@ -2,6 +2,9 @@ package interpreter.command;
 
 import interpreter.expr.Expr;
 import interpreter.expr.SetExpr;
+import interpreter.expr.UnaryExpr;
+import interpreter.expr.UnsafeVariable;
+import interpreter.expr.Variable;
 import interpreter.value.Value;
 
 public class AssignCommand extends Command {
